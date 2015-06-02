@@ -1,5 +1,9 @@
 .DS_Store
 .DS_STORE
 .idea/
-cordova_project/platforms/
-cordova_project/plugins/
+cordova_project/
+ionic_project/node_modules/
+ionic_project/platforms/
+ionic_project/plugins/
+ionic_project/www/assets/css/
+ionic_project/www/lib/

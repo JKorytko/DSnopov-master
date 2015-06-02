@@ -1,0 +1,12 @@
+{
+  "name": "Pocket Vocabulary",
+  "app_id": "7dac9539",
+  "gulpStartupTasks": [
+    "sass",
+    "watch"
+  ],
+  "watchPatterns": [
+    "www/**/*",
+    "!www/lib/**/*"
+  ]
+}
