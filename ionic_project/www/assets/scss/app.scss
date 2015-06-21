@@ -1,3 +1,50 @@
-.tests {
-  padding: 40px;
+/* search page */
+.suggestions-list {
+  padding: 20px 0 0;
+}
+/* definition page */
+.definition {
+  padding: 15px 0;
+  border-top: 1px solid #8E9091;
+}
+.definition:first-child {
+  border-top: none;
+}
+.definition__word {
+  font-size: 24px;
+}
+.definition__pron {
+  padding-left: 15px;
+  font-size: 16px;
+}
+.definition__functional-label {
+  padding-left: 15px;
+  color: #7C7575;
+  font-weight: bold;
+  font-size: 16px;
+  font-style: italic;
+}
+.definition__il {
+  font-style: italic;
+  color: #575656;
+}
+.definition__if {
+  font-weight: bold;
+}
+.definition__if:after {
+  content: ';';
+}
+.definition__if:last-child:after {
+  content: '';
+}
+.definition__entry {
+  margin: 10px 0;
+}
+.definition__examples {
+  list-style: square inside;
+  color: #00B7E0;
+  padding-left: 15px;
+}
+.definition__examples li>span {
+  color: black;
 }
