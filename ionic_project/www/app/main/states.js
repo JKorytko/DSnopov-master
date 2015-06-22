@@ -18,12 +18,26 @@
           }
         }
       })
-      .state('app.add_word', {
-        url: '/add_word',
+      .state('app.search', {
+        url: '/search',
         views: {
           'menuContent': {
-            templateUrl: 'app/add_word/add_word.html',
-            controller: 'AddWordController'
+            templateUrl: 'app/search/search.html',
+            controller: 'SearchController'
+          }
+        }
+      })
+      .state('app.word_definition', {
+        url: '/word_definition/:word',
+        resolve: {
+          wordInfo: function(wordService) {
+            return wordService.getWordInfo();
+          }
+        },
+        views: {
+          'menuContent': {
+            templateUrl: 'app/word_definition/word_definition.html',
+            controller: 'WordDefinitionController'
           }
         }
       });
