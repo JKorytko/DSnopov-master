@@ -1,6 +1,6 @@
 (function() {
   var constants = {
-    REQUEST_URL: 'http://cors-anywhere.herokuapp.com/www.dictionaryapi.com/api/v1/references/learners/xml/',
+    REQUEST_URL: 'http://crossorigin.me/http://www.dictionaryapi.com/api/v1/references/learners/xml/',
 //    REQUEST_URL: 'http://www.dictionaryapi.com/api/v1/references/learners/xml/',
     KEY: 'ca61d361-999f-451a-9277-269313df9b3d'
   };
