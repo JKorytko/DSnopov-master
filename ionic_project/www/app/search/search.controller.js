@@ -13,7 +13,7 @@
     }
 
     $scope.showDefinition = function() {
-      wordService.requestWordInfo($scope.model.word)
+      wordService.requestWordInfo($scope.model.word.toLowerCase())
         .then(function () {
           $state.go('app.word_definition');
         }, function (error) {

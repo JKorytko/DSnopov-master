@@ -18,14 +18,19 @@
         definitions = [];
         entryObj = {};
         $entry = $(entries[i]);
-        entryWord = $entry.attr('id');
+        entryWord = $entry.attr('id').toLowerCase();
         if (bracketsRegExp.test(entryWord)) {
           entryObj['word'] = entryWord.substr(0, word.length);
         } else {
           entryObj['word'] = entryWord;
         }
         if (entryObj['word'] !== word) {
-          continue;
+          if(i + 1 === entries.length && !wordEntries.length) {
+            $entry = $(entries[0]);
+            entryObj['word'] = $entry.attr('id').toLowerCase();
+          } else {
+            continue;
+          }
         }
 
         entryObj['pronunciation'] = $entry.children('pr').text();
@@ -57,7 +62,7 @@
         $def = $entry.children('def');
         $sns = $def.find('sn');
         $dts = $def.find('dt');
-        for (j = 0, len = $sns.length; j < len; j++) {
+        for (j = 0, len = $dts.length; j < len; j++) {
           examples = [];
           $vis = $dts.eq(j).find('vi');
           $vis.each(function (index, vi) {
@@ -65,7 +70,7 @@
           });
           if (examples.length) {
             definitions.push({
-              sn: $sns.eq(j).text(),
+              sn: $dts.length === $sns.length ? $sns.eq(j).text() : null,
               definition: $dts.get(j).childNodes[0].nodeValue,
               examples: examples
             });

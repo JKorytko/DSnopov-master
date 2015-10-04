@@ -1,4 +1,7 @@
 <ion-view view-title="Search">
+    <ion-nav-buttons side="right">
+
+    </ion-nav-buttons>
     <ion-content>
         <form name="form">
             <div class="list list-inset">
@@ -13,11 +16,13 @@
                         class="button">
                     Open
                 </button>
+                <!--
                 <button ng-disabled="form.word.$error.required"
                         class="button"
                         type="button">
                     Quick Save
                 </button>
+                -->
             </div>
         </form>
         <div ng-show="model.suggestions.length" class="list suggestions-list">
