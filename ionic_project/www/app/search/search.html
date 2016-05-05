@@ -7,11 +7,11 @@
             <div class="list list-inset">
                 <label class="item item-input">
                     <i class="icon ion-search placeholder-icon"></i>
-                    <input required ng-model="model.word" name="word" type="text" placeholder="Search">
+                    <input required ng-model="inputWord" name="word" type="text" placeholder="Search">
                 </label>
             </div>
             <div class="button-bar bar-positive padding">
-                <button ng-click="showDefinition()"
+                <button ng-click="showDefinition(inputWord)"
                         ng-disabled="form.word.$error.required"
                         class="button">
                     Open
@@ -25,11 +25,11 @@
                 -->
             </div>
         </form>
-        <div ng-show="model.suggestions.length" class="list suggestions-list">
+        <div ng-show="data.suggestions.length" class="list suggestions-list">
             <div class="item item-divider">
                 Suggestions:
             </div>
-            <a ng-click="onSuggestionClick(suggestion)" ng-repeat="suggestion in model.suggestions" class="item" href="">
+            <a ng-click="showDefinition(suggestion)" ng-repeat="suggestion in data.suggestions" class="item" href="">
                 {{suggestion}}
             </a>
         </div>

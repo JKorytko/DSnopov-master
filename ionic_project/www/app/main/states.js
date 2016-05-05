@@ -30,8 +30,9 @@
       .state('app.word_definition', {
         url: '/word_definition/:word',
         resolve: {
-          wordInfo: function(wordService) {
-            return wordService.getWordInfo();
+          requestWord: function($stateParams, wordModel) {
+            wordModel.data.word = $stateParams.word;
+            return wordModel.requestData();
           }
         },
         views: {

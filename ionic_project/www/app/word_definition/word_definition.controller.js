@@ -1,9 +1,8 @@
 (function() {
   angular.module('pd.word_definition', [])
-    .controller('WordDefinitionController', ['$scope', 'wordInfo', WordDefinitionController]);
+    .controller('WordDefinitionController', ['$scope', 'wordModel', WordDefinitionController]);
 
-  function WordDefinitionController($scope, wordInfo) {
-    $scope.wordInfo = wordInfo;
-
+  function WordDefinitionController($scope, wordModel) {
+    $scope.data = wordModel.data;
   }
 })();

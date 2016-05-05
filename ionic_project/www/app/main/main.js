@@ -30,20 +30,20 @@
       }
     });
 
-//    $rootScope.$on('$stateChangeSuccess', function () {
-//      console.log('$stateChangeSuccess event', arguments);
-//    });
-//
-//    $rootScope.$on('$stateChangeStart', function () {
-//      console.log('$stateChangeStart event', arguments);
-//    });
-//
-//    $rootScope.$on('$stateNotFound', function () {
-//      console.warn('$stateNotFound event', arguments);
-//    });
-//
-//    $rootScope.$on('$stateChangeError', function () {
-//      console.warn('$stateChangeError event', arguments);
-//    });
+   $rootScope.$on('$stateChangeSuccess', function () {
+     console.log('$stateChangeSuccess event', arguments);
+   });
+
+   $rootScope.$on('$stateChangeStart', function () {
+     console.log('$stateChangeStart event', arguments);
+   });
+
+   $rootScope.$on('$stateNotFound', function () {
+     console.warn('$stateNotFound event', arguments);
+   });
+
+   $rootScope.$on('$stateChangeError', function () {
+     console.warn('$stateChangeError event', arguments);
+   });
   }
 })();

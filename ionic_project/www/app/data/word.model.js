@@ -1,11 +1,11 @@
 (function() {
   angular.module('pd.data')
-    .service('wordService', ['$q', '$http', '$ionicLoading', 'constants', wordService]);
+    .service('wordModel', ['$q', '$http', '$ionicLoading', 'constants', 'helpers', wordModel]);
 
-  function wordService($q, $http, $ionicLoading, constants) {
-    var wordInfo;
+  function wordModel($q, $http, $ionicLoading, constants, helpers) {
+    var model;
 
-    function parseWordInfoXML(word, XML) {
+    function _parseXMLResponse(XML) {
       var wordEntries = [], entryObj, entryWord,
         inflections, inflectionsNodes, tempChildren,
         $def, $sns, $dts, $vis, examples, definitions,
@@ -20,11 +20,11 @@
         $entry = $(entries[i]);
         entryWord = $entry.attr('id').toLowerCase();
         if (bracketsRegExp.test(entryWord)) {
-          entryObj['word'] = entryWord.substr(0, word.length);
+          entryObj['word'] = entryWord.substr(0, model.data.word.length);
         } else {
           entryObj['word'] = entryWord;
         }
-        if (entryObj['word'] !== word) {
+        if (entryObj['word'] !== model.data.word) {
           if(i + 1 === entries.length && !wordEntries.length) {
             $entry = $(entries[0]);
             entryObj['word'] = $entry.attr('id').toLowerCase();
@@ -84,42 +84,48 @@
       return wordEntries;
     }
 
-    function checkResponse(word, dataXML) {
-      var suggestionsNodes = dataXML.getElementsByTagName('suggestion'), suggestions = [],
+    function _checkResponse(dataXML) {
+      var suggestionsNodes = dataXML.getElementsByTagName('suggestion'),
         entriesNodes = dataXML.getElementsByTagName('entry');
 
-      if (!entriesNodes.length) {
+      model.data.suggestions = [];
+      if (!entriesNodes.length) { /* incorrect word, show suggestions */
         for(var i = 0; i < suggestionsNodes.length; i++) {
-          suggestions[i] = suggestionsNodes[i].childNodes[0].nodeValue;
+          model.data.suggestions[i] = suggestionsNodes[i].childNodes[0].nodeValue;
         }
-        console.warn(suggestions, suggestionsNodes);
-        return $q.reject({suggestions: suggestions});
+        helpers.showAlert('The word is not found.', 
+          'Click on a spelling suggestion or try your search again.');
+        return $q.reject();
       } else {
-        wordInfo = parseWordInfoXML(word, dataXML);
-        return wordInfo;
+        model.data.webster = _parseXMLResponse(dataXML);
       }
     }
 
-    function requestWordInfo(word) {
-      $ionicLoading.show();
-      return $http.get(constants.REQUEST_URL + word, {params: {key: constants.KEY}})
-        .then(function (response) {
-          return checkResponse(word, $.parseXML(response.data));
-        }, function () {
-          return $q.reject({msg: 'Network error.'});
-        })
-        .finally(function () {
-          $ionicLoading.hide(); //todo: angular $http interceptors?
-        });
-    }
+    model =  {
 
-    function getWordInfo() {
-      return wordInfo;
-    }
+      data: {
+        suggestions: [],
+        word: '',
+        webster: [],
+        wordnet: {}
+      },
 
-    return {
-      requestWordInfo: requestWordInfo,
-      getWordInfo: getWordInfo
+      requestData: function () {
+        $ionicLoading.show();
+        return $http.get(constants.REQUEST_URL + model.data.word, {params: {key: constants.KEY}})
+          .then(function (response) {
+            return _checkResponse($.parseXML(response.data));
+          }, function () {
+            helpers.showAlert('Network error.');
+            return $q.reject();
+          })
+          .finally(function () {
+            $ionicLoading.hide(); //todo: angular $http interceptors?
+          });
+      }
+
     };
+
+    return model;
   }
 })();
