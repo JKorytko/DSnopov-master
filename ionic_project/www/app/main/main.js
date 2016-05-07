@@ -1,8 +1,9 @@
 (function() {
   var constants = {
-    REQUEST_URL: 'http://crossorigin.me/http://www.dictionaryapi.com/api/v1/references/learners/xml/',
-//    REQUEST_URL: 'http://www.dictionaryapi.com/api/v1/references/learners/xml/',
-    KEY: 'ca61d361-999f-451a-9277-269313df9b3d'
+    WEBSTER_URL: 'http://crossorigin.me/http://www.dictionaryapi.com/api/v1/references/learners/xml/',
+//    WEBSTER_URL: 'http://www.dictionaryapi.com/api/v1/references/learners/xml/',
+    WORDNET_URL: 'http://wordnet.rkbexplorer.com/sparql/',
+    WEBSTER_KEY: 'ca61d361-999f-451a-9277-269313df9b3d'
   };
 
   angular.module('pd',

@@ -5,7 +5,7 @@
   function wordModel($q, $http, $ionicLoading, constants, helpers) {
     var model;
 
-    function _parseXMLResponse(XML) {
+    function _parseWebsterXML(word, XML) {
       var wordEntries = [], entryObj, entryWord,
         inflections, inflectionsNodes, tempChildren,
         $def, $sns, $dts, $vis, examples, definitions,
@@ -20,11 +20,11 @@
         $entry = $(entries[i]);
         entryWord = $entry.attr('id').toLowerCase();
         if (bracketsRegExp.test(entryWord)) {
-          entryObj['word'] = entryWord.substr(0, model.data.word.length);
+          entryObj['word'] = entryWord.substr(0, word.length);
         } else {
           entryObj['word'] = entryWord;
         }
-        if (entryObj['word'] !== model.data.word) {
+        if (entryObj['word'] !== word) {
           if(i + 1 === entries.length && !wordEntries.length) {
             $entry = $(entries[0]);
             entryObj['word'] = $entry.attr('id').toLowerCase();
@@ -84,7 +84,7 @@
       return wordEntries;
     }
 
-    function _checkResponse(dataXML) {
+    function _checkWebsterResponse(dataXML) {
       var suggestionsNodes = dataXML.getElementsByTagName('suggestion'),
         entriesNodes = dataXML.getElementsByTagName('entry');
 
@@ -97,8 +97,23 @@
           'Click on a spelling suggestion or try your search again.');
         return $q.reject();
       } else {
-        model.data.webster = _parseXMLResponse(dataXML);
+        model.data.webster = _parseWebsterXML(model.data.word, dataXML);
       }
+    }
+
+    function _getWordnetQuerySPARQL(word) {
+      return [
+        'PREFIX wn: <http://www.w3.org/2006/03/wn/wn20/schema/>',
+        'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>',
+        'SELECT ?synset ?synsetId ?word ?gloss ',
+        'WHERE {',
+          '?synset rdfs:label "' + word + '" ;',
+            'wn:synsetId ?synsetId ;',
+            'wn:gloss ?gloss ;',
+            'wn:containsWordSense ?wordSense .',
+          '?wordSense rdfs:label ?word',
+        '}'
+      ].join('');
     }
 
     model =  {
@@ -111,17 +126,26 @@
       },
 
       requestData: function () {
-        $ionicLoading.show();
-        return $http.get(constants.REQUEST_URL + model.data.word, {params: {key: constants.KEY}})
-          .then(function (response) {
-            return _checkResponse($.parseXML(response.data));
-          }, function () {
-            helpers.showAlert('Network error.');
-            return $q.reject();
-          })
-          .finally(function () {
-            $ionicLoading.hide(); //todo: angular $http interceptors?
-          });
+        return $http.get(constants.WORDNET_URL, {
+          params: {
+            format: 'json',
+            query: _getWordnetQuerySPARQL(model.data.word)
+          }
+        }).then(function () {
+          console.warn(arguments);
+          return $q.reject();
+        })
+        // $ionicLoading.show();
+        // return $http.get(constants.WEBSTER_URL + model.data.word, {params: {key: constants.WEBSTER_KEY}})
+        //   .then(function (response) {
+        //     return _checkWebsterResponse($.parseXML(response.data));
+        //   }, function () {
+        //     helpers.showAlert('Network error.');
+        //     return $q.reject();
+        //   })
+        //   .finally(function () {
+        //     $ionicLoading.hide(); //todo: angular $http interceptors?
+        //   });
       }
 
     };
