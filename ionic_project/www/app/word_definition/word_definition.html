@@ -4,7 +4,7 @@
     <ion-content class="padding-horizontal">
         <div ng-repeat="entry in data.webster" class="definition">
             <div class="definition__header">
-                <span class="definition__word">{{entry.word}}</span>
+                <span class="definition__word">{{entry.entryWord}}</span>
                 <span ng-show="entry.pronunciation" class="definition__pron">{{'/' + entry.pronunciation + '/'}}</span>
                 <span class="definition__functional-label">{{entry.functionalLabel}}</span>
             </div>

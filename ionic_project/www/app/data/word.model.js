@@ -20,14 +20,14 @@
         $entry = $(entries[i]);
         entryWord = $entry.attr('id').toLowerCase();
         if (bracketsRegExp.test(entryWord)) {
-          entryObj['word'] = entryWord.substr(0, word.length);
+          entryObj['entryWord'] = entryWord.substr(0, word.length);
         } else {
-          entryObj['word'] = entryWord;
+          entryObj['entryWord'] = entryWord;
         }
-        if (entryObj['word'] !== word) {
+        if (entryObj['entryWord'] !== word) {
           if(i + 1 === entries.length && !wordEntries.length) {
             $entry = $(entries[0]);
-            entryObj['word'] = $entry.attr('id').toLowerCase();
+            entryObj['entryWord'] = $entry.attr('id').toLowerCase();
           } else {
             continue;
           }
