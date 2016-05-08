@@ -82,20 +82,15 @@
       return wordEntries;
     }
 
-    function _checkWebsterResponse(dataXML) {
-      var suggestionsNodes = dataXML.getElementsByTagName('suggestion'),
+    function _getWebsterSuggestions(dataXML) {
+      var suggestions = [],
         entriesNodes = dataXML.getElementsByTagName('entry');
 
-      model.data.suggestions = [];
       if (!entriesNodes.length) { /* incorrect word, show suggestions */
-        for(var i = 0; i < suggestionsNodes.length; i++) {
-          model.data.suggestions[i] = suggestionsNodes[i].childNodes[0].nodeValue;
-        }
-        helpers.showAlert('The word is not found.', 
-          'Click on a spelling suggestion or try your search again.');
-        return $q.reject();
-      } else {
-        model.data.webster = _parseWebsterXML(model.data.word, dataXML);
+        Array.prototype.forEach.call(dataXML.getElementsByTagName('suggestion'), function (v) {
+          suggestions.push(v.childNodes[0].nodeValue);
+        });
+        return suggestions;
       }
     }
 
@@ -103,47 +98,102 @@
       return [
         'PREFIX wn: <http://www.w3.org/2006/03/wn/wn20/schema/>',
         'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>',
-        'SELECT ?synset ?synsetId ?word ?gloss ',
+        'SELECT ?synSet ?synSetId ?gloss ?synSetWord ',
         'WHERE {',
-          '?synset rdfs:label "' + word + '" ;',
-            'wn:synsetId ?synsetId ;',
+          '?queryWordSense rdfs:label "' + word + '" .',
+          '?synSet wn:synsetId ?synSetId ;',
             'wn:gloss ?gloss ;',
+            'wn:containsWordSense ?queryWordSense ;',
             'wn:containsWordSense ?wordSense .',
-          '?wordSense rdfs:label ?word',
+          '?wordSense rdfs:label ?synSetWord',
         '}'
       ].join('');
+    }
+
+    function _parseWordnetJSON(dataJSON) {
+      var synSets = [],
+        synSetIdToIndexMap = {};
+
+      dataJSON.results.bindings.forEach(function (v) {
+        var synSetId = parseInt(v.synSetId.value, 10),
+          synSetIndex = synSetIdToIndexMap[synSetId],
+          synSet;
+        if (typeof synSetIndex === 'number') {
+          //we have already saved this particular synSet, just add the synSetWord to its words array
+          synSets[synSetIndex].words.push(v.synSetWord.value);
+        } else {
+          synSet = {
+            synSetId: synSetId,
+            partOfSpeech: v.synSet.value, //TODO
+            gloss: v.gloss.value,
+            words: [v.synSetWord.value]
+          };
+          synSetIndex = synSets.push(synSet) - 1; //get current synSet index in the synSets array
+          synSetIdToIndexMap[synSetId] = synSetIndex; //save this index
+        }
+      });
+
+      return synSets;
+    }
+
+    function _requestWordnetData() {
+      console.warn('starting wordnet request');
+      return $http.get(constants.WORDNET_URL, {
+        params: {
+          format: 'json',
+          query: _getWordnetQuerySPARQL(model.data.word)
+        }
+      })
+        .then(function (response) {
+          console.warn('success wordnet request', response);
+          model.data.wordnet = _parseWordnetJSON(response.data);
+        });
+    }
+
+    function _requestWebsterData() {
+      console.warn('starting webster request');
+      return $http.get(constants.WEBSTER_URL + model.data.word, {params: {key: constants.WEBSTER_KEY}})
+        .then(function (response) {
+          console.warn('success webster request', response);
+          var XML = $.parseXML(response.data),
+            suggestions = _getWebsterSuggestions(XML);
+          if (suggestions) {
+            model.data.suggestions = suggestions;
+            return $q.reject({
+              title: 'The word is not found.',
+              msg: 'Click on a spelling suggestion or try your search again.'
+            });
+          } else {
+            model.data.suggestions = [];
+            model.data.webster = _parseWebsterXML(model.data.word, XML);
+          }
+        });
     }
 
     model =  {
 
       data: {
-        suggestions: [],
         word: '',
+        suggestions: [],
         webster: [],
         wordnet: {}
       },
 
       requestData: function () {
-        return $http.get(constants.WORDNET_URL, {
-          params: {
-            format: 'json',
-            query: _getWordnetQuerySPARQL(model.data.word)
-          }
-        }).then(function () {
-          console.warn(arguments);
-          return $q.reject();
-        })
-        // $ionicLoading.show();
-        // return $http.get(constants.WEBSTER_URL + model.data.word, {params: {key: constants.WEBSTER_KEY}})
-        //   .then(function (response) {
-        //     return _checkWebsterResponse($.parseXML(response.data));
-        //   }, function () {
-        //     helpers.showAlert('Network error.');
-        //     return $q.reject();
-        //   })
-        //   .finally(function () {
-        //     $ionicLoading.hide(); //todo: angular $http interceptors?
-        //   });
+        $ionicLoading.show();
+        return _requestWebsterData()
+          .then(_requestWordnetData)
+          .catch(function (reason) {
+            if (reason && reason.title) {
+              helpers.showAlert(reason.title, reason.msg);
+            } else {
+              helpers.showAlert('Network error.');
+            }
+            return $q.reject(reason);
+          })
+          .finally(function () {
+            $ionicLoading.hide();
+          });
       }
 
     };
