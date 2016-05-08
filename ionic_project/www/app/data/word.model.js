@@ -8,7 +8,7 @@
     function _parseWebsterXML(word, XML) {
       var wordEntries = [], entryObj, entryWord,
         inflections, inflectionsNodes, tempChildren,
-        $def, $sns, $dts, $vis, examples, definitions,
+        $def, $dts, $vis, examples, definitions,
         bracketsRegExp = /\[+/,
         entries, $entry,
         i, l, j, len;
@@ -60,7 +60,6 @@
 
         /* definition */
         $def = $entry.children('def');
-        $sns = $def.find('sn');
         $dts = $def.find('dt');
         for (j = 0, len = $dts.length; j < len; j++) {
           examples = [];
@@ -70,7 +69,6 @@
           });
           if (examples.length) {
             definitions.push({
-              sn: $dts.length === $sns.length ? $sns.eq(j).text() : null,
               definition: $dts.get(j).childNodes[0].nodeValue,
               examples: examples
             });
