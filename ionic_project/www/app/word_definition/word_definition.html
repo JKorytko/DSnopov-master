@@ -21,5 +21,17 @@
                 <li ng-repeat="example in definitionEntry.examples"><span>{{example}}</span></li>
             </ul>
         </div>
+        <div class="definition">
+            <div class="definition__header">
+                <span class="definition__word definition__word--synonym">Synonyms</span>
+            </div>
+            <p ng-repeat-start="synSet in data.wordnet" class="definition__entry">
+                {{synSet.gloss}}
+                <span class="definition__functional-label">{{synSet.partOfSpeech}}s</span>
+            </p>
+            <ul ng-repeat-end class="definition__examples">
+                <li ng-repeat="word in synSet.words"><span>{{word}}</span></li>
+            </ul>
+        </div>
     </ion-content>
 </ion-view>

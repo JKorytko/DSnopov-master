@@ -6,12 +6,15 @@
 .definition {
   padding: 15px 0;
   border-top: 1px solid #8E9091;
-}
-.definition:first-child {
-  border-top: none;
+  &:first-child {
+    border-top: none;
+  }
 }
 .definition__word {
   font-size: 24px;
+}
+.definition__word--synonym {
+  color: #7C7575;
 }
 .definition__pron {
   padding-left: 15px;
@@ -30,12 +33,12 @@
 }
 .definition__if {
   font-weight: bold;
-}
-.definition__if:after {
-  content: ';';
-}
-.definition__if:last-child:after {
-  content: '';
+  &:after {
+    content: ';';
+  }
+  &:last-child:after {
+    content: '';
+  }
 }
 .definition__entry {
   margin: 10px 0;

@@ -7,7 +7,7 @@
     $scope.data = wordModel.data;
 
     $scope.showDefinition = function(word) {
-      $state.go('app.word_definition', {word: word});
+      $state.go('app.word_definition', {word: word.toLowerCase()});
     };
   }
 })();

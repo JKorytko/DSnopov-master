@@ -110,6 +110,12 @@
       ].join('');
     }
 
+    function _getSynSetPartOfSpeech(synSetURI) {
+      var splitted = synSetURI.split('-'),
+        partOfSpeech = splitted[splitted.length - 2];
+      return partOfSpeech === 'adjectivesatellite' ? 'adjective' : partOfSpeech;
+    }
+
     function _parseWordnetJSON(dataJSON) {
       var synSets = [],
         synSetIdToIndexMap = {};
@@ -124,7 +130,7 @@
         } else {
           synSet = {
             synSetId: synSetId,
-            partOfSpeech: v.synSet.value, //TODO
+            partOfSpeech: _getSynSetPartOfSpeech(v.synSet.value),
             gloss: v.gloss.value,
             words: [v.synSetWord.value]
           };
@@ -176,7 +182,7 @@
         word: '',
         suggestions: [],
         webster: [],
-        wordnet: {}
+        wordnet: []
       },
 
       requestData: function () {
