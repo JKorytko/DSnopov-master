@@ -1,5 +1,8 @@
 <ion-view view-title="{{data.word}}">
     <ion-nav-buttons side="right">
+        <a ng-click="toggleDBPresence()"
+           ng-class="{'ion-plus-round': !data.isSavedToDB, 'ion-trash-b': data.isSavedToDB}"
+           class="button button-icon button-clear"></a>
     </ion-nav-buttons>
     <ion-content class="padding-horizontal">
         <div ng-repeat="entry in data.webster" class="definition">
@@ -30,7 +33,7 @@
                 <span class="definition__functional-label">{{synSet.partOfSpeech}}s</span>
             </p>
             <ul ng-repeat-end class="definition__examples">
-                <li ng-repeat="word in synSet.words"><span>{{word}}</span></li>
+                <li ng-repeat="word in synSet.synSetWords"><span>{{word}}</span></li>
             </ul>
         </div>
     </ion-content>

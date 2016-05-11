@@ -1,8 +1,8 @@
 (function() {
   angular.module('pd.data')
-    .service('wordModel', ['$q', '$http', '$ionicLoading', 'constants', 'helpers', wordModel]);
+    .service('wordModel', ['$q', '$http', '$ionicLoading', 'constants', 'helpers', 'storage', wordModel]);
 
-  function wordModel($q, $http, $ionicLoading, constants, helpers) {
+  function wordModel($q, $http, $ionicLoading, constants, helpers, storage) {
     var model;
 
     function _parseWebsterXML(word, XML) {
@@ -126,13 +126,13 @@
           synSet;
         if (typeof synSetIndex === 'number') {
           //we have already saved this particular synSet, just add the synSetWord to its words array
-          synSets[synSetIndex].words.push(v.synSetWord.value);
+          synSets[synSetIndex].synSetWords.push(v.synSetWord.value);
         } else {
           synSet = {
             synSetId: synSetId,
             partOfSpeech: _getSynSetPartOfSpeech(v.synSet.value),
             gloss: v.gloss.value,
-            words: [v.synSetWord.value]
+            synSetWords: [v.synSetWord.value]
           };
           synSetIndex = synSets.push(synSet) - 1; //get current synSet index in the synSets array
           synSetIdToIndexMap[synSetId] = synSetIndex; //save this index
@@ -180,6 +180,7 @@
 
       data: {
         word: '',
+        isSavedToDB: false,
         suggestions: [],
         webster: [],
         wordnet: []
@@ -200,6 +201,24 @@
           .finally(function () {
             $ionicLoading.hide();
           });
+      },
+
+      toggleDBPresence: function () {
+        if (model.data.isSavedToDB) {
+          storage.removeWordFromDB(model.data.word)
+            .then(function () {
+              model.data.isSavedToDB = false;
+            }, function () {
+              helpers.showAlert('Database error.');
+            });
+        } else {
+          storage.saveWordToDB(angular.copy(model.data))
+            .then(function () {
+              model.data.isSavedToDB = true;
+            }, function () {
+              helpers.showAlert('Database error.');
+            });
+        }
       }
 
     };

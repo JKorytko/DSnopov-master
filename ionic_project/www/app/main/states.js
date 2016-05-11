@@ -8,7 +8,12 @@
         url: '/app',
         abstract: true,
         templateUrl: 'app/menu/menu.html',
-        controller: 'MenuController'
+        controller: 'MenuController',
+        resolve: {
+          database: ['storage', function (storage) {
+            return storage.initDatabase();
+          }]
+        }
       })
       .state('app.vocabulary', {
         url: '/vocabulary',
@@ -30,10 +35,10 @@
       .state('app.word_definition', {
         url: '/word_definition/:word',
         resolve: {
-          requestWord: function($stateParams, wordModel) {
+          requestWord: ['$stateParams', 'wordModel', function($stateParams, wordModel) {
             wordModel.data.word = $stateParams.word;
             return wordModel.requestData();
-          }
+          }]
         },
         views: {
           'menuContent': {
