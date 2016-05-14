@@ -35,7 +35,7 @@
       .state('app.word_definition', {
         url: '/word_definition/:word',
         resolve: {
-          requestWord: ['$stateParams', 'wordModel', function($stateParams, wordModel) {
+          requestWord: ['$stateParams', 'wordModel', 'database', function($stateParams, wordModel) {
             wordModel.data.word = $stateParams.word;
             return wordModel.requestData();
           }]

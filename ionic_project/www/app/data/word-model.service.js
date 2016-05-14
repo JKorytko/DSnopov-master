@@ -149,31 +149,50 @@
           format: 'json',
           query: _getWordnetQuerySPARQL(model.data.word)
         }
-      })
-        .then(function (response) {
-          console.warn('success wordnet request', response);
-          model.data.wordnet = _parseWordnetJSON(response.data);
-        });
+      });
+    }
+
+    function _parseWordnetData(response) {
+      console.warn('success wordnet request', response);
+      model.data.wordnet = _parseWordnetJSON(response.data);
     }
 
     function _requestWebsterData() {
       console.warn('starting webster request');
-      return $http.get(constants.WEBSTER_URL + model.data.word, {params: {key: constants.WEBSTER_KEY}})
-        .then(function (response) {
-          console.warn('success webster request', response);
-          var XML = $.parseXML(response.data),
-            suggestions = _getWebsterSuggestions(XML);
-          if (suggestions) {
-            model.data.suggestions = suggestions;
-            return $q.reject({
-              title: 'The word is not found.',
-              msg: 'Click on a spelling suggestion or try your search again.'
-            });
-          } else {
-            model.data.suggestions = [];
-            model.data.webster = _parseWebsterXML(model.data.word, XML);
-          }
+      return $http.get(constants.WEBSTER_URL + model.data.word, {params: {key: constants.WEBSTER_KEY}});
+    }
+
+    function _parseWebsterData(response) {
+      console.warn('success webster request', response);
+      var XML = $.parseXML(response.data),
+        suggestions = _getWebsterSuggestions(XML);
+      if (suggestions) {
+        model.data.suggestions = suggestions;
+        return $q.reject({
+          title: 'The word is not found.',
+          msg: 'Click on a spelling suggestion or try your search again.'
         });
+      } else {
+        model.data.suggestions = [];
+        model.data.webster = _parseWebsterXML(model.data.word, XML);
+      }
+    }
+
+    function _requestAndParseWord() {
+      console.warn('there is no such word in the DB, requesting it');
+      return _requestWebsterData()
+        .then(_parseWebsterData)
+        .then(_requestWordnetData)
+        .then(_parseWordnetData);
+    }
+
+    function _handleWordErrors(reason) {
+      if (reason && reason.title) {
+        helpers.showAlert(reason.title, reason.msg);
+      } else {
+        helpers.showAlert('Network error.');
+      }
+      return $q.reject(reason);
     }
 
     model =  {
@@ -188,16 +207,12 @@
 
       requestData: function () {
         $ionicLoading.show();
-        return _requestWebsterData()
-          .then(_requestWordnetData)
-          .catch(function (reason) {
-            if (reason && reason.title) {
-              helpers.showAlert(reason.title, reason.msg);
-            } else {
-              helpers.showAlert('Network error.');
-            }
-            return $q.reject(reason);
-          })
+        return storage.getWordFromDB(model.data.word)
+          .then(function (word) {
+            console.warn('get word from DB success', word);
+            model.data = word;
+          }, _requestAndParseWord)
+          .catch(_handleWordErrors)
           .finally(function () {
             $ionicLoading.hide();
           });

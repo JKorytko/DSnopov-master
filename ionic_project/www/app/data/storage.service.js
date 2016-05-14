@@ -53,7 +53,7 @@
         db.onerror = function(e) {
           console.warn('db error', e);
         };
-        deferred.resolve(e);
+        deferred.resolve(db);
       };
       
       return deferred.promise;
@@ -170,10 +170,63 @@
       return deferred.promise;
     }
 
+    // todo: refactor
+    function getWordFromDB(word) {
+      var deferred = $q.defer();
+
+      _getWordObjectByIndex(word)
+        .then(function (wordObject) {
+          var synSets = [], entries = [],
+            synSetsTransaction, synSetsOS,
+            entriesTransaction, entriesOS;
+
+          synSetsTransaction = db.transaction('synSets');
+          synSetsOS = synSetsTransaction.objectStore('synSets');
+          wordObject.synSetIds.forEach(function (v) {
+            synSetsOS.get(v).onsuccess = function (e) {
+              synSets.push(e.target.result);
+            };
+          });
+
+          synSetsTransaction.onerror = function (e) {
+            deferred.reject(e);
+          };
+
+          synSetsTransaction.oncomplete = function () {
+            entriesTransaction = db.transaction('entries');
+            entriesOS = entriesTransaction.objectStore('entries');
+            wordObject.entryIds.forEach(function (v) {
+              entriesOS.get(v).onsuccess = function (e) {
+                entries.push(e.target.result);
+              };
+            });
+
+            entriesTransaction.onerror = function (e) {
+              deferred.reject(e);
+            };
+
+            entriesTransaction.oncomplete = function() {
+              deferred.resolve({
+                word: wordObject.word,
+                isSavedToDB: true,
+                suggestions: [],
+                webster: entries,
+                wordnet: synSets
+              });
+            };
+          };
+        }, function (reason) {
+          deferred.reject(reason);
+        });
+
+      return deferred.promise;
+    }
+
     storage = {
       initDatabase: initDatabase,
       saveWordToDB: saveWordToDB,
-      removeWordFromDB: removeWordFromDB
+      removeWordFromDB: removeWordFromDB,
+      getWordFromDB: getWordFromDB
     };
 
     return storage;
