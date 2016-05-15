@@ -17,6 +17,7 @@
       })
       .state('app.vocabulary', {
         url: '/vocabulary',
+        cache: false,
         resolve: {
           words: ['wordsModel', 'database', function (wordsModel) {
             return wordsModel.getAllWords();
