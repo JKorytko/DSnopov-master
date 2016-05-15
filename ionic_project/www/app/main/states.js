@@ -17,9 +17,15 @@
       })
       .state('app.vocabulary', {
         url: '/vocabulary',
+        resolve: {
+          words: ['wordsModel', 'database', function (wordsModel) {
+            return wordsModel.getAllWords();
+          }]
+        },
         views: {
           'menuContent': {
-            templateUrl: 'app/vocabulary/vocabulary.html'
+            templateUrl: 'app/vocabulary/vocabulary.html',
+            controller: 'VocabularyController'
           }
         }
       })
@@ -37,7 +43,7 @@
         resolve: {
           requestWord: ['$stateParams', 'wordModel', 'database', function($stateParams, wordModel) {
             wordModel.data.word = $stateParams.word;
-            return wordModel.requestData();
+            return wordModel.getWord();
           }]
         },
         views: {

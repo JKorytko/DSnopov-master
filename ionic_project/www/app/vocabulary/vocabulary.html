@@ -1,5 +1,9 @@
-<ion-view view-title="My Page">
-    <ion-content class="padding">
-        List of words
+<ion-view view-title="Vocabulary">
+    <ion-content>
+        <ion-list>
+            <ion-item ui-sref="app.word_definition({word: wordObj.word})" ng-repeat="wordObj in words">
+                {{wordObj.word}}
+            </ion-item>
+        </ion-list>
     </ion-content>
 </ion-view>

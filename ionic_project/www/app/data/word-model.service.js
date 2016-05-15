@@ -180,6 +180,7 @@
 
     function _requestAndParseWord() {
       console.warn('there is no such word in the DB, requesting it');
+      model.data.isSavedToDB = false;
       return _requestWebsterData()
         .then(_parseWebsterData)
         .then(_requestWordnetData)
@@ -205,7 +206,7 @@
         wordnet: []
       },
 
-      requestData: function () {
+      getWord: function () {
         $ionicLoading.show();
         return storage.getWordFromDB(model.data.word)
           .then(function (word) {

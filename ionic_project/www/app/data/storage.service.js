@@ -222,11 +222,37 @@
       return deferred.promise;
     }
 
+    function getAllWordObjects() {
+      var results = [],
+        cursorRequest,
+        deferred = $q.defer();
+
+      cursorRequest = db
+        .transaction('words')
+        .objectStore('words')
+        .index('word')
+        .openCursor();
+
+      cursorRequest.onsuccess = function (e) {
+        var cursor = e.target.result;
+        if (cursor) {
+          results.push(cursor.value);
+          cursor.continue();
+        } else {
+          deferred.resolve(results);
+        }
+
+      };
+
+      return deferred.promise;
+    }
+
     storage = {
       initDatabase: initDatabase,
       saveWordToDB: saveWordToDB,
       removeWordFromDB: removeWordFromDB,
-      getWordFromDB: getWordFromDB
+      getWordFromDB: getWordFromDB,
+      getAllWordObjects: getAllWordObjects
     };
 
     return storage;

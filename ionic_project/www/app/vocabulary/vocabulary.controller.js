@@ -1,8 +1,8 @@
 (function() {
   angular.module('pd.vocabulary', [])
-    .controller('MenuController', ['$scope', MenuController]);
+    .controller('VocabularyController', ['$scope', 'wordsModel', VocabularyController]);
 
-  function MenuController($scope) {
-
+  function VocabularyController($scope, wordsModel) {
+    $scope.words = wordsModel.data.words;
   }
 })();
