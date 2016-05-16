@@ -49,7 +49,7 @@
         },
         views: {
           'menuContent': {
-            templateUrl: 'app/word_definition/word_definition.html',
+            templateUrl: 'app/word_definition/word-definition.html',
             controller: 'WordDefinitionController'
           }
         }
