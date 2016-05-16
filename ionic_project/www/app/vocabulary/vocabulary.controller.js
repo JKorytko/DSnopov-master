@@ -1,8 +1,8 @@
 (function() {
   angular.module('pd.vocabulary', [])
-    .controller('VocabularyController', ['$scope', 'wordsModel', VocabularyController]);
+    .controller('VocabularyController', ['$scope', 'groupByFirstLetterFilter', 'wordsModel', VocabularyController]);
 
-  function VocabularyController($scope, wordsModel) {
-    $scope.words = wordsModel.data.words;
+  function VocabularyController($scope, groupByFirstLetter, wordsModel) {
+    $scope.groupedWords = groupByFirstLetter(wordsModel.data.words);
   }
 })();

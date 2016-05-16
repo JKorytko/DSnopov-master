@@ -4,9 +4,12 @@
     </ion-nav-buttons>
     <ion-content>
         <ion-list>
-            <ion-item ui-sref="app.word_definition({word: wordObj.word})" ng-repeat="wordObj in words">
-                {{wordObj.word}}
-            </ion-item>
+            <div ng-repeat="group in groupedWords">
+                <div class="item item-divider">{{group.letter}}</div>
+                <ion-item ng-repeat="wordObj in group.list" ui-sref="app.word_definition({word: wordObj.word})">
+                    {{wordObj.word}}
+                </ion-item>
+            </div>
         </ion-list>
     </ion-content>
 </ion-view>
