@@ -1,0 +1,40 @@
+<ion-view view-title="{{data.word}}">
+    <ion-nav-buttons side="right">
+        <a ng-click="toggleDBPresence()"
+           ng-class="{'ion-plus-round': !data.isSavedToDB, 'ion-trash-b': data.isSavedToDB}"
+           class="button button-icon button-clear"></a>
+    </ion-nav-buttons>
+    <ion-content class="padding-horizontal">
+        <div ng-repeat="entry in data.webster" class="definition">
+            <div class="definition__header">
+                <span class="definition__word">{{entry.entryWord}}</span>
+                <span ng-show="entry.pronunciation" class="definition__pron">{{'/' + entry.pronunciation + '/'}}</span>
+                <span class="definition__functional-label">{{entry.functionalLabel}}</span>
+            </div>
+            <div class="definition__sub-header">
+                <!-- span.definition__if + span.definition_il -->
+                <span ng-repeat="inflection in entry.inflections" ng-class="'definition__' + inflection.type">
+                    {{inflection.value}}
+                </span>
+            </div>
+            <p ng-repeat-start="definitionEntry in entry.definitions" class="definition__entry">
+                {{definitionEntry.definition}}
+            </p>
+            <ul ng-repeat-end class="definition__examples">
+                <li ng-repeat="example in definitionEntry.examples"><span>{{example}}</span></li>
+            </ul>
+        </div>
+        <div class="definition">
+            <div class="definition__header">
+                <span class="definition__word definition__word--synonym">Synonyms</span>
+            </div>
+            <p ng-repeat-start="synSet in data.wordnet" class="definition__entry">
+                {{synSet.gloss}}
+                <span class="definition__functional-label">{{synSet.partOfSpeech}}s</span>
+            </p>
+            <ul ng-repeat-end class="definition__examples">
+                <li ng-repeat="word in synSet.synSetWords"><span>{{word}}</span></li>
+            </ul>
+        </div>
+    </ion-content>
+</ion-view>

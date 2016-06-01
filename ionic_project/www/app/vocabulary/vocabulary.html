@@ -1,5 +1,15 @@
-<ion-view view-title="My Page">
-    <ion-content class="padding">
-        List of words
+<ion-view view-title="Vocabulary">
+    <ion-nav-buttons side="right">
+        <a ui-sref="app.search" class="button button-icon button-clear ion-ios-search-strong"></a>
+    </ion-nav-buttons>
+    <ion-content>
+        <ion-list>
+            <div ng-repeat="group in groupedWords">
+                <div class="item item-divider">{{group.letter}}</div>
+                <ion-item ng-repeat="wordObj in group.list" ui-sref="app.word_definition({word: wordObj.word})">
+                    {{wordObj.word}}
+                </ion-item>
+            </div>
+        </ion-list>
     </ion-content>
 </ion-view>

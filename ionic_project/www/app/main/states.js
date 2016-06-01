@@ -8,13 +8,25 @@
         url: '/app',
         abstract: true,
         templateUrl: 'app/menu/menu.html',
-        controller: 'MenuController'
+        controller: 'MenuController',
+        resolve: {
+          database: ['storage', function (storage) {
+            return storage.initDatabase();
+          }]
+        }
       })
       .state('app.vocabulary', {
         url: '/vocabulary',
+        cache: false,
+        resolve: {
+          words: ['wordsModel', 'database', function (wordsModel) {
+            return wordsModel.getAllWords();
+          }]
+        },
         views: {
           'menuContent': {
-            templateUrl: 'app/vocabulary/vocabulary.html'
+            templateUrl: 'app/vocabulary/vocabulary.html',
+            controller: 'VocabularyController'
           }
         }
       })
@@ -30,13 +42,14 @@
       .state('app.word_definition', {
         url: '/word_definition/:word',
         resolve: {
-          wordInfo: function(wordService) {
-            return wordService.getWordInfo();
-          }
+          requestWord: ['$stateParams', 'wordModel', 'database', function($stateParams, wordModel) {
+            wordModel.data.word = $stateParams.word;
+            return wordModel.getWord();
+          }]
         },
         views: {
           'menuContent': {
-            templateUrl: 'app/word_definition/word_definition.html',
+            templateUrl: 'app/word_definition/word-definition.html',
             controller: 'WordDefinitionController'
           }
         }

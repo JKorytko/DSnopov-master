@@ -1,34 +1,13 @@
 (function() {
   angular.module('pd.search', [])
-    .controller('SearchController', ['$scope', '$state', '$ionicPopup', 'wordService', SearchController]);
+    .controller('SearchController', ['$scope', '$state', 'wordModel', SearchController]);
 
-  function SearchController($scope, $state, $ionicPopup, wordService) {
-    $scope.model = {};
+  function SearchController($scope, $state, wordModel) {
+    $scope.inputWord = '';
+    $scope.data = wordModel.data;
 
-    function showAlert(title, msg) {
-      $ionicPopup.alert({
-        title: title,
-        template: msg
-      });
-    }
-
-    $scope.showDefinition = function() {
-      wordService.requestWordInfo($scope.model.word)
-        .then(function () {
-          $state.go('app.word_definition');
-        }, function (error) {
-          if(error.msg) {
-            showAlert(error.msg);
-          } else {
-            showAlert('The word is not found.', 'Click on a spelling suggestion or try your search again.');
-            $scope.model.suggestions = error.suggestions;
-          }
-        });
+    $scope.showDefinition = function(word) {
+      $state.go('app.word_definition', {word: word.toLowerCase()});
     };
-
-    $scope.onSuggestionClick = function(suggestion) {
-      $scope.model.word = suggestion;
-      $scope.showDefinition();
-    }
   }
 })();
